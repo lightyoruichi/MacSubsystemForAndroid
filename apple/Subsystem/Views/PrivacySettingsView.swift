@@ -61,15 +61,6 @@ struct PrivacyCategoryView: View {
 
     var body: some View {
         Form {
-            if category == .microphone {
-                Section {
-                    Toggle("Let Android use this Mac's microphone", isOn: $settings.microphone)
-                } footer: {
-                    Text(subsystem.state == .running
-                         ? "Android has no microphone when this is off, whatever apps are allowed. A change takes effect the next time Android starts."
-                         : "Android has no microphone when this is off, whatever apps are allowed.")
-                }
-            }
             if let hardware {
                 Section {
                     Label(hardware, systemImage: "info.circle").foregroundStyle(.secondary)
@@ -101,6 +92,7 @@ struct PrivacyCategoryView: View {
     private var hardware: String? {
         switch category {
         case .camera: return "Android doesn't have a camera on this Mac yet, so apps can't take photos even when allowed."
+        case .microphone: return "Android doesn't have a microphone on this Mac yet, so apps can't record sound even when allowed."
         case .location: return "Android has no location source on this Mac, so apps can't find where you are even when allowed."
         case .phone, .callLogs, .messages: return "Android has no phone service on this Mac."
         case .bodySensors, .activity: return "Android has no body or motion sensors on this Mac."

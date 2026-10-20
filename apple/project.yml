@@ -68,7 +68,6 @@ targets:
         # A background app with a menu bar item; the settings window brings it to the Dock.
         LSUIElement: true
         NSHumanReadableCopyright: Free software under the GNU GPL v3.
-        NSMicrophoneUsageDescription: Android apps you allow can use the microphone (turn it on in Settings › System).
         MSADisplayName: $(APP_NAME)
         MSAShortName: $(APP_SHORT_NAME)
         MSALegacySupportFolders: $(LEGACY_SUPPORT_FOLDERS)

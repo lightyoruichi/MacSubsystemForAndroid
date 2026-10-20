@@ -47,7 +47,6 @@ final class SubsystemSettings: ObservableObject {
     @Published var cpuCount: Int { didSet { defaults.set(cpuCount, forKey: "cpuCount") } }
     @Published var developerMode: Bool { didSet { defaults.set(developerMode, forKey: "developerMode") } }
     @Published var showAndroidScreen: Bool { didSet { defaults.set(showAndroidScreen, forKey: "showAndroidScreen") } }
-    @Published var microphone: Bool { didSet { defaults.set(microphone, forKey: "microphone") } }
     @Published var showSoftKeyboard: Bool { didSet { defaults.set(showSoftKeyboard, forKey: "showSoftKeyboard") } }
     @Published var displayDensity: Double { didSet { defaults.set(displayDensity, forKey: "displayDensity") } }
     @Published var notifications: Bool { didSet { defaults.set(notifications, forKey: "notifications") } }
@@ -75,7 +74,6 @@ final class SubsystemSettings: ObservableObject {
         cpuCount = defaults.object(forKey: "cpuCount") as? Int ?? VirtualMachine.defaultCPUCount
         developerMode = defaults.bool(forKey: "developerMode")
         showAndroidScreen = defaults.bool(forKey: "showAndroidScreen")
-        microphone = defaults.bool(forKey: "microphone")
         showSoftKeyboard = defaults.bool(forKey: "showSoftKeyboard")
         displayDensity = defaults.object(forKey: "displayDensity") as? Double ?? 1.0
         notifications = defaults.object(forKey: "notifications") as? Bool ?? true

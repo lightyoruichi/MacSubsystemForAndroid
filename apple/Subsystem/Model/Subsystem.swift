@@ -76,13 +76,11 @@ final class Subsystem: ObservableObject {
     struct LaunchSettings: Equatable {
         var memoryMB: Int
         var cpuCount: Int
-        var microphone: Bool
         var showAndroidScreen: Bool
 
         @MainActor init(_ settings: SubsystemSettings) {
             memoryMB = settings.memoryMB
             cpuCount = settings.cpuCount
-            microphone = settings.microphone
             showAndroidScreen = settings.showAndroidScreen
         }
     }
@@ -99,7 +97,6 @@ final class Subsystem: ObservableObject {
         var changes: [String] = []
         if now.memoryMB != launched.memoryMB { changes.append("memory") }
         if now.cpuCount != launched.cpuCount { changes.append("processor cores") }
-        if now.microphone != launched.microphone { changes.append("microphone") }
         if now.showAndroidScreen != launched.showAndroidScreen { changes.append("Android screen window") }
         return changes
     }
@@ -208,8 +205,7 @@ final class Subsystem: ObservableObject {
                 memoryMB: settings.memoryMB,
                 cpuCount: settings.cpuCount,
                 adbPort: AppConfig.adbPort,
-                showDisplay: settings.showAndroidScreen || displayForApproval,
-                microphone: settings.microphone)
+                showDisplay: settings.showAndroidScreen || displayForApproval)
         } catch {
             setState(.failed(error.localizedDescription))
             return

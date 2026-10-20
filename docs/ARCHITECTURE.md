@@ -122,4 +122,4 @@ When the app is renamed, `SubsystemPaths.support` moves the folder from any name
 
 ## Settings that apply at start
 
-`Subsystem.launchedWith` records the memory, processor cores, microphone and Android-screen settings Android was started with; `changesNeedingRestart` lists those that differ now. The settings window shows a banner with *Restart Now* and the menu bar menu shows *Restart Android to Apply Changes* while the list isn't empty.
+`Subsystem.launchedWith` records the memory, processor cores and Android-screen settings Android was started with; `changesNeedingRestart` lists those that differ now. The settings window shows a banner with *Restart Now* and the menu bar menu shows *Restart Android to Apply Changes* while the list isn't empty.

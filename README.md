@@ -71,7 +71,7 @@ Double-click an `.apk` and the app installs and opens. Android (LineageOS, no Go
 | USB debugging | Developer mode, ADB at `127.0.0.1:58526` |
 | A phone's hardware | Android (LineageOS `virtio_arm64only`) in QEMU with Apple's Hypervisor framework |
 
-The menu bar item and the Settings window hold the rest: Always Ready, what happens when the last app closes (*Automatic*, *As needed*, *Continuous*), performance modes, privacy, storage, files, developer mode and reset. The Settings window takes after the Mac's System Settings, with a searchable sidebar that shows Android's status, and when a setting that applies at start changes (memory, processor cores, microphone) it offers to restart Android.
+The menu bar item and the Settings window hold the rest: Always Ready, what happens when the last app closes (*Automatic*, *As needed*, *Continuous*), performance modes, privacy, storage, files, developer mode and reset. The Settings window takes after the Mac's System Settings, with a searchable sidebar that shows Android's status, and when a setting that applies at start changes (memory, processor cores) it offers to restart Android.
 
 ## Requirements
 

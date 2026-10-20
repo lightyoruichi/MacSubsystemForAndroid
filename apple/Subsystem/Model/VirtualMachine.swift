@@ -23,7 +23,6 @@ final class VirtualMachine: @unchecked Sendable {
         var cpuCount: Int
         var adbPort: UInt16
         var showDisplay: Bool
-        var microphone: Bool
     }
 
     enum Failure: LocalizedError {
@@ -164,7 +163,9 @@ final class VirtualMachine: @unchecked Sendable {
             "-serial", "file:\(consoleURL.path)",
             "-audiodev", "coreaudio,id=audio0",
             "-device", "intel-hda",
-            "-device", c.microphone ? "hda-duplex,audiodev=audio0" : "hda-output,audiodev=audio0",
+            // Output only: QEMU's Core Audio backend can't record (max_voices_in = 0), so
+            // hda-duplex just logs "Can not open `adc'" and Android still gets no microphone.
+            "-device", "hda-output,audiodev=audio0",
             // The main display only hosts Android's own launcher; app windows use virtual displays.
             "-device", "virtio-gpu-pci,xres=1080,yres=1920",
         ]

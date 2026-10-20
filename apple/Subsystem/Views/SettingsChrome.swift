@@ -60,7 +60,7 @@ extension SettingsSection {
     /// Extra words the sidebar search matches.
     var keywords: [String] {
         switch self {
-        case .system: return ["start", "stop", "always ready", "login", "resources", "notifications", "microphone", "status"]
+        case .system: return ["start", "stop", "always ready", "login", "resources", "notifications", "status"]
         case .performance: return ["mode", "power saver", "smart", "standard", "gaming", "battery", "cpu", "cores", "memory", "ram", "controller", "gamepad"]
         case .apps: return ["install", "apk", "f-droid", "launcher", "uninstall", "keyboard", "density"]
         case .privacy: return ["permissions", "camera", "microphone", "location", "contacts"]

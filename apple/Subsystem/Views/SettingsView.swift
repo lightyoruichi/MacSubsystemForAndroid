@@ -141,7 +141,6 @@ struct SystemSettingsView: View {
 
             Section {
                 Toggle("Show Android notifications on the Mac", isOn: $settings.notifications)
-                Toggle("Let Android apps use the microphone", isOn: $settings.microphone)
             } header: {
                 Text("Integration")
             }
