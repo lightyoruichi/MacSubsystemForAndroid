@@ -9,6 +9,11 @@
 //   Android  its battery saver (`cmd power set-mode`) and fixed-performance mode.
 //   Windows  frame rate and bitrate, read by app windows from status.json.
 //
+// Sound playing or recording in Android lifts Saver to Balanced: background priority
+// starves QEMU's audio (Core Audio skips cycles). With the microphone on, Saver never
+// uses background priority: a recording that starts starved puts Android's input
+// stream into an error state it doesn't recover from.
+//
 // Smart mode re-evaluates whenever the front app, power source, Low Power Mode or
 // thermal state changes, and every 10 seconds.
 //
@@ -33,6 +38,8 @@ final class PerformanceManager {
     private var powerSource: CFRunLoopSource?
     private let work = DispatchQueue(label: "msa.performance", qos: .utility)
     private let root = RootShell()
+    /// Android has an audio stream out of standby (playing or recording); refreshed by evaluate().
+    private var audioActive = false
 
     private init() {}
 
@@ -56,6 +63,7 @@ final class PerformanceManager {
         timer = nil
         appliedLevel = nil
         appliedPID = 0
+        audioActive = false
     }
 
     private func observeOnce() {
@@ -93,6 +101,7 @@ final class PerformanceManager {
         var windowsOpen = false
         var androidInFront = false
         var gameInFront = false
+        var audioActive = false
 
         /// The Mac needs its resources back, whatever Android is doing.
         var constrained: Bool { lowPowerMode || hot || batteryLow || memoryPressure || othersBusy }
@@ -120,6 +129,7 @@ final class PerformanceManager {
         c.memoryPressure = SystemLoad.memoryPressureLevel >= 2
         c.othersBusy = load.othersBusy(excluding: Subsystem.shared.vmProcessIdentifier)
         c.windowsOpen = Subsystem.shared.appWindowsOpen
+        c.audioActive = audioActive
 
         let prefix = AppConfig.launcherBundlePrefix + "."
         if let front = NSWorkspace.shared.frontmostApplication, front.bundleIdentifier?.hasPrefix(prefix) == true {
@@ -133,6 +143,11 @@ final class PerformanceManager {
     }
 
     func resolve(_ mode: PerformanceMode, _ c: Conditions) -> PerformanceLevel {
+        let level = baseLevel(mode, c)
+        return level == .saver && c.audioActive ? .balanced : level
+    }
+
+    private func baseLevel(_ mode: PerformanceMode, _ c: Conditions) -> PerformanceLevel {
         switch mode {
         case .standard: return .standard
         case .performance: return .performance
@@ -157,26 +172,44 @@ final class PerformanceManager {
         guard case .running = subsystem.state else { return }
         let newLevel = resolve(SubsystemSettings.shared.performanceMode, currentConditions())
         let pid = subsystem.vmProcessIdentifier ?? 0
+        refreshAudioActivity(subsystem.adbConnection)
         let changed = newLevel != level
         level = newLevel
         if changed { onChange?(newLevel) }
         guard force || newLevel != appliedLevel || pid != appliedPID else { return }
         appliedLevel = newLevel
         appliedPID = pid
-        apply(newLevel, pid: pid, adb: subsystem.adbConnection,
+        let background = newLevel.backgroundPriority && subsystem.launchedWith?.microphone != true
+        apply(newLevel, background: background, pid: pid, adb: subsystem.adbConnection,
               cpuCount: SubsystemSettings.shared.cpuCount, memoryMB: SubsystemSettings.shared.memoryMB)
+    }
+
+    /// Ask Android whether any audio stream is out of standby (AudioFlinger puts one in
+    /// standby 3 s after its last track stops) and re-evaluate when that changes.
+    private func refreshAudioActivity(_ adb: ADBConnection?) {
+        guard let adb, [.smart, .powerSaver].contains(SubsystemSettings.shared.performanceMode) else { return }
+        work.async {
+            guard let count = try? adb.execString("dumpsys media.audio_flinger | grep -c 'Standby: no'", timeout: 5) else { return }
+            let active = (Int(count) ?? 0) > 0
+            Task { @MainActor in
+                let manager = PerformanceManager.shared
+                guard active != manager.audioActive else { return }
+                manager.audioActive = active
+                manager.evaluate()
+            }
+        }
     }
 
     // MARK: Applying
 
-    private func apply(_ level: PerformanceLevel, pid: pid_t, adb: ADBConnection?, cpuCount: Int, memoryMB: Int) {
+    private func apply(_ level: PerformanceLevel, background: Bool, pid: pid_t, adb: ADBConnection?, cpuCount: Int, memoryMB: Int) {
         let root = root
         work.async {
             // 1. QEMU's scheduling class: background (efficiency cores) or normal.
             if pid > 0 {
                 let PRIO_DARWIN_PROCESS: Int32 = 4
                 let PRIO_DARWIN_BG: Int32 = 0x1000
-                setpriority(PRIO_DARWIN_PROCESS, id_t(pid), level.backgroundPriority ? PRIO_DARWIN_BG : 0)
+                setpriority(PRIO_DARWIN_PROCESS, id_t(pid), background ? PRIO_DARWIN_BG : 0)
             }
 
             // 2. Memory: balloon down to the level's share (never below 1.5 GB).
