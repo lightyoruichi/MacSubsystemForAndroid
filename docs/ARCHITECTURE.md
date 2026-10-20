@@ -24,7 +24,7 @@
 
 - **Mac Android Subsystem.app** is an agent (`LSUIElement`) with a menu bar item. It owns QEMU, keeps one ADB connection, and writes `status.json` (off / starting / running / failed, the ADB port).
 - **Each Android app** has a launcher bundle in `~/Applications/Android Apps`. Its executable is a copy of `AndroidAppHost`; its `Info.plist` names the Android package (`MSAPackageName`). Separate processes give each Android app its own Dock icon, ⌘-Tab entry and menu bar.
-- **QEMU** runs as a child process of the Subsystem: `-machine virt -accel hvf -cpu host`, UEFI from `edk2-aarch64-code.fd`, virtio-blk disks, user-mode networking with `hostfwd=tcp:127.0.0.1:58526-:5555`, `intel-hda` through Core Audio, `-display none`.
+- **QEMU** runs as a child process of the Subsystem: `-machine virt -accel hvf -cpu host`, UEFI from `edk2-aarch64-code.fd`, virtio-blk disks, user-mode networking with `hostfwd=tcp:127.0.0.1:58526-:5555`, `intel-hda` through Core Audio (`hda-output`), or through SDL (`hda-duplex`) when the microphone is on, since QEMU's Core Audio backend can't record, `-display none`.
 
 ## Starting Android
 

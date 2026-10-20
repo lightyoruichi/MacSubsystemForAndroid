@@ -6,7 +6,7 @@ It includes or downloads the following software, each under its own licence:
 
 | Component | Licence | How it is used | Source |
 |---|---|---|---|
-| QEMU | GPL-2.0 (some parts GPL-2.0-or-later, LGPL, BSD) | Bundled in `Contents/Helpers` and run as a separate program, with its libraries from Homebrew (glib, pixman, libslirp and others, under their own licences) | https://www.qemu.org/download/ (the version is in `Contents/Resources/qemu/QEMU-VERSION`) |
+| QEMU | GPL-2.0 (some parts GPL-2.0-or-later, LGPL, BSD) | Bundled in `Contents/Helpers` and run as a separate program, built from source with SDL audio, with its libraries from Homebrew (glib, pixman, libslirp, SDL and others, under their own licences) | https://www.qemu.org/download/ (the version is in `Contents/Resources/qemu/QEMU-VERSION`) |
 | EDK II (edk2-aarch64-code.fd) | BSD-2-Clause-Patent | UEFI firmware for the virtual machine | https://github.com/tianocore/edk2 |
 | scrcpy server 5.0.1 | Apache-2.0 | Bundled as `scrcpy-server.jar` and run inside Android for app windows | https://github.com/Genymobile/scrcpy |
 | LineageOS | Apache-2.0, GPL-2.0 (Linux kernel) and others | Downloaded on first launch as the Android image | https://github.com/LineageOS |
