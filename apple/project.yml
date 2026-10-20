@@ -117,6 +117,9 @@ targets:
       properties:
         # QEMU's libraries are signed separately from the app.
         com.apple.security.cs.disable-library-validation: true
+        # macOS charges QEMU's microphone use to this app (the responsible process),
+        # and without this hardened-runtime entitlement it denies without asking.
+        com.apple.security.device.audio-input: true
     postBuildScripts:
       - name: Embed window host, QEMU and Android payload
         basedOnDependencyAnalysis: false
