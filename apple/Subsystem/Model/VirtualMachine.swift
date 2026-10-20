@@ -162,7 +162,8 @@ final class VirtualMachine: @unchecked Sendable {
             "-qmp", "unix:\(QMPClient.socketURL.path),server=on,wait=off",
             "-device", "virtio-serial",
             "-serial", "file:\(consoleURL.path)",
-            "-audiodev", "coreaudio,id=audio0",
+            // QEMU's Core Audio backend can't record (max_voices_in = 0); SDL can, and plays too.
+            "-audiodev", c.microphone ? "sdl,id=audio0" : "coreaudio,id=audio0",
             "-device", "intel-hda",
             "-device", c.microphone ? "hda-duplex,audiodev=audio0" : "hda-output,audiodev=audio0",
             // The main display only hosts Android's own launcher; app windows use virtual displays.
